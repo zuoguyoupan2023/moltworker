@@ -187,6 +187,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
     config.channels.telegram = config.channels.telegram || {};
     config.channels.telegram.botToken = process.env.TELEGRAM_BOT_TOKEN;
     config.channels.telegram.enabled = true;
+    config.channels.telegram.dm = config.channels.telegram.dm || {};
     config.channels.telegram.dmPolicy = process.env.TELEGRAM_DM_POLICY || 'pairing';
 }
 
@@ -233,15 +234,11 @@ if (isOpenAI) {
     const openaiPrimary = isOpenAICompat ? 'openai/kimi-k2-turbo-preview' : 'openai/gpt-5.2';
     config.models = config.models || {};
     config.models.providers = config.models.providers || {};
-    const openaiProvider = {
+    config.models.providers.openai = {
         baseUrl: baseUrl,
         api: openaiApi,
         models: openaiModels
     };
-    if (process.env.OPENAI_API_KEY) {
-        openaiProvider.apiKey = process.env.OPENAI_API_KEY;
-    }
-    config.models.providers.openai = openaiProvider;
     config.agents.defaults.models = config.agents.defaults.models || {};
     openaiModels.forEach((model) => {
         config.agents.defaults.models[`openai/${model.id}`] = { alias: model.name };

@@ -30,16 +30,6 @@ publicRoutes.get('/logo-small.png', (c) => {
   return c.env.ASSETS.fetch(c.req.raw);
 });
 
-publicRoutes.get('/favicon.ico', (c) => {
-  return c.env.ASSETS.fetch(c.req.raw).then((response) => {
-    if (response.status !== 404) {
-      return response;
-    }
-    const url = new URL(c.req.url);
-    return c.env.ASSETS.fetch(new Request(new URL('/logo-small.png', url.origin).toString(), c.req.raw));
-  });
-});
-
 // GET /api/status - Public health check for gateway status (no auth required)
 publicRoutes.get('/api/status', async (c) => {
   const sandbox = c.get('sandbox');

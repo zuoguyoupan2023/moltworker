@@ -55,7 +55,7 @@ export { Sandbox };
 function validateRequiredEnv(env: MoltbotEnv): string[] {
   const missing: string[] = [];
 
-  if (!env.MOLTBOT_GATEWAY_TOKEN && !env.CLAWDBOT_GATEWAY_TOKEN) {
+  if (!env.MOLTBOT_GATEWAY_TOKEN) {
     missing.push('MOLTBOT_GATEWAY_TOKEN');
   }
 
