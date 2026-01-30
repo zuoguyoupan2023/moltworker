@@ -10,10 +10,11 @@ export function buildEnvVars(env: MoltbotEnv): Record<string, string> {
   const envVars: Record<string, string> = {};
 
   const isOpenAIGateway = env.AI_GATEWAY_BASE_URL?.endsWith('/openai');
+  const useOpenAI = !!env.OPENAI_API_KEY || !!env.OPENAI_BASE_URL;
 
-  // AI Gateway vars take precedence
-  // Map to the appropriate provider env var based on the gateway endpoint
-  if (env.AI_GATEWAY_API_KEY) {
+  if (useOpenAI && env.OPENAI_API_KEY) {
+    envVars.OPENAI_API_KEY = env.OPENAI_API_KEY;
+  } else if (env.AI_GATEWAY_API_KEY) {
     if (isOpenAIGateway) {
       envVars.OPENAI_API_KEY = env.AI_GATEWAY_API_KEY;
     } else {
@@ -21,25 +22,21 @@ export function buildEnvVars(env: MoltbotEnv): Record<string, string> {
     }
   }
 
-  // Fall back to direct provider keys
-  if (!envVars.ANTHROPIC_API_KEY && env.ANTHROPIC_API_KEY) {
+  if (!useOpenAI && !envVars.ANTHROPIC_API_KEY && env.ANTHROPIC_API_KEY) {
     envVars.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
   }
-  if (!envVars.OPENAI_API_KEY && env.OPENAI_API_KEY) {
-    envVars.OPENAI_API_KEY = env.OPENAI_API_KEY;
-  }
 
-  // Pass base URL (used by start-moltbot.sh to determine provider)
-  if (env.AI_GATEWAY_BASE_URL) {
+  if (useOpenAI) {
+    if (env.OPENAI_BASE_URL) {
+      envVars.OPENAI_BASE_URL = env.OPENAI_BASE_URL;
+    }
+  } else if (env.AI_GATEWAY_BASE_URL) {
     envVars.AI_GATEWAY_BASE_URL = env.AI_GATEWAY_BASE_URL;
-    // Also set the provider-specific base URL env var
     if (isOpenAIGateway) {
       envVars.OPENAI_BASE_URL = env.AI_GATEWAY_BASE_URL;
     } else {
       envVars.ANTHROPIC_BASE_URL = env.AI_GATEWAY_BASE_URL;
     }
-  } else if (env.OPENAI_BASE_URL) {
-    envVars.OPENAI_BASE_URL = env.OPENAI_BASE_URL;
   } else if (env.ANTHROPIC_BASE_URL) {
     envVars.ANTHROPIC_BASE_URL = env.ANTHROPIC_BASE_URL;
   }
