@@ -67,13 +67,13 @@ function validateRequiredEnv(env: MoltbotEnv): string[] {
     missing.push('CF_ACCESS_AUD');
   }
 
-  if (env.OPENAI_API_KEY) {
-    if (!env.OPENAI_BASE_URL) {
-      missing.push('OPENAI_BASE_URL (required when using OPENAI_API_KEY)');
-    }
-  } else if (env.AI_GATEWAY_API_KEY) {
+  if (env.AI_GATEWAY_API_KEY) {
     if (!env.AI_GATEWAY_BASE_URL) {
       missing.push('AI_GATEWAY_BASE_URL (required when using AI_GATEWAY_API_KEY)');
+    }
+  } else if (env.OPENAI_API_KEY) {
+    if (!env.OPENAI_BASE_URL) {
+      missing.push('OPENAI_BASE_URL (required when using OPENAI_API_KEY)');
     }
   } else if (!env.ANTHROPIC_API_KEY) {
     missing.push('ANTHROPIC_API_KEY or AI_GATEWAY_API_KEY or OPENAI_API_KEY');

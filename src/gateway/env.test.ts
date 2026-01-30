@@ -57,29 +57,16 @@ describe('buildEnvVars', () => {
     expect(result.AI_GATEWAY_BASE_URL).toBe('https://gateway.example.com/anthropic');
   });
 
-  it('AI_GATEWAY_* takes precedence over direct provider keys for OpenAI when OPENAI_* is not set', () => {
+  it('AI_GATEWAY_* takes precedence over direct provider keys for OpenAI', () => {
     const env = createMockEnv({
       AI_GATEWAY_API_KEY: 'gateway-key',
       AI_GATEWAY_BASE_URL: 'https://gateway.example.com/openai',
+      OPENAI_API_KEY: 'direct-key',
     });
     const result = buildEnvVars(env);
     expect(result.OPENAI_API_KEY).toBe('gateway-key');
     expect(result.AI_GATEWAY_BASE_URL).toBe('https://gateway.example.com/openai');
     expect(result.OPENAI_BASE_URL).toBe('https://gateway.example.com/openai');
-  });
-
-  it('prioritizes OPENAI_* over AI_GATEWAY_* when OPENAI_BASE_URL is set', () => {
-    const env = createMockEnv({
-      OPENAI_API_KEY: 'openai-key',
-      OPENAI_BASE_URL: 'https://api.moonshot.cn/v1',
-      AI_GATEWAY_API_KEY: 'gateway-key',
-      AI_GATEWAY_BASE_URL: 'https://gateway.example.com/anthropic',
-    });
-    const result = buildEnvVars(env);
-    expect(result.OPENAI_API_KEY).toBe('openai-key');
-    expect(result.OPENAI_BASE_URL).toBe('https://api.moonshot.cn/v1');
-    expect(result.AI_GATEWAY_BASE_URL).toBeUndefined();
-    expect(result.ANTHROPIC_API_KEY).toBeUndefined();
   });
 
   it('falls back to ANTHROPIC_* when AI_GATEWAY_* not set', () => {
