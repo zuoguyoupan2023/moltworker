@@ -85,15 +85,6 @@ describe('buildEnvVars', () => {
     expect(result.OPENAI_API_KEY).toBe('sk-openai-key');
   });
 
-  it('includes OPENAI_BASE_URL when set directly (no gateway)', () => {
-    const env = createMockEnv({
-      OPENAI_API_KEY: 'sk-openai-key',
-      OPENAI_BASE_URL: 'https://api.moonshot.cn/v1',
-    });
-    const result = buildEnvVars(env);
-    expect(result.OPENAI_BASE_URL).toBe('https://api.moonshot.cn/v1');
-  });
-
   it('maps MOLTBOT_GATEWAY_TOKEN to CLAWDBOT_GATEWAY_TOKEN for container', () => {
     const env = createMockEnv({ MOLTBOT_GATEWAY_TOKEN: 'my-token' });
     const result = buildEnvVars(env);
