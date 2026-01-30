@@ -70,16 +70,6 @@
   "browser": {
     "binding": "BROWSER",
   },
-  "vars": {
-    "OPENAI_BASE_URL": "https://api.moonshot.cn/v1",
-  },
-  "routes": [
-    {
-      "pattern": "openclawbot.online",
-      "zone_name": "openclawbot.online",
-      "custom_domain": true,
-    },
-  ],
   // Note: CF_ACCOUNT_ID should be set via `wrangler secret put CF_ACCOUNT_ID`
   // Secrets to configure via `wrangler secret put`:
   // - ANTHROPIC_API_KEY: Your Anthropic API key
