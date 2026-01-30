@@ -16,7 +16,6 @@ export interface MoltbotEnv {
   OPENAI_API_KEY?: string;
   OPENAI_BASE_URL?: string;
   MOLTBOT_GATEWAY_TOKEN?: string; // Gateway token (mapped to CLAWDBOT_GATEWAY_TOKEN for container)
-  CLAWDBOT_GATEWAY_TOKEN?: string;
 
   CLAWDBOT_BIND_MODE?: string;
   DEV_MODE?: string; // Set to 'true' for local dev (skips CF Access auth + moltbot device pairing)
