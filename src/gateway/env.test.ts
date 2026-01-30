@@ -113,6 +113,12 @@ describe('buildEnvVars', () => {
     expect(result.CLAWDBOT_GATEWAY_TOKEN).toBe('my-token');
   });
 
+  it('passes through CLAWDBOT_GATEWAY_TOKEN when set', () => {
+    const env = createMockEnv({ CLAWDBOT_GATEWAY_TOKEN: 'legacy-token' });
+    const result = buildEnvVars(env);
+    expect(result.CLAWDBOT_GATEWAY_TOKEN).toBe('legacy-token');
+  });
+
   it('includes all channel tokens when set', () => {
     const env = createMockEnv({
       TELEGRAM_BOT_TOKEN: 'tg-token',
