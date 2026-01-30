@@ -212,30 +212,38 @@ if (process.env.SLACK_BOT_TOKEN && process.env.SLACK_APP_TOKEN) {
 // Usage: Set AI_GATEWAY_BASE_URL or ANTHROPIC_BASE_URL to your endpoint like:
 //   https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/anthropic
 //   https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai
-const baseUrl = process.env.AI_GATEWAY_BASE_URL || process.env.ANTHROPIC_BASE_URL || '';
-const isOpenAI = baseUrl.endsWith('/openai');
+const baseUrl = process.env.AI_GATEWAY_BASE_URL || process.env.OPENAI_BASE_URL || process.env.ANTHROPIC_BASE_URL || '';
+const isOpenAIGateway = baseUrl.endsWith('/openai');
+const isOpenAICompat = !!process.env.OPENAI_BASE_URL && !isOpenAIGateway;
+const isOpenAI = isOpenAICompat || isOpenAIGateway;
 
 if (isOpenAI) {
-    // Create custom openai provider config with baseUrl override
-    // Omit apiKey so moltbot falls back to OPENAI_API_KEY env var
     console.log('Configuring OpenAI provider with base URL:', baseUrl);
+    const openaiApi = isOpenAICompat ? 'openai-chat-completions' : 'openai-responses';
+    const openaiModels = isOpenAICompat
+        ? [
+            { id: 'kimi-k2-turbo-preview', name: 'Kimi K2 Turbo Preview', contextWindow: 200000 },
+            { id: 'kimi-k2', name: 'Kimi K2', contextWindow: 200000 },
+            { id: 'kimi-k1', name: 'Kimi K1', contextWindow: 200000 },
+        ]
+        : [
+            { id: 'gpt-5.2', name: 'GPT-5.2', contextWindow: 200000 },
+            { id: 'gpt-5', name: 'GPT-5', contextWindow: 200000 },
+            { id: 'gpt-4.5-preview', name: 'GPT-4.5 Preview', contextWindow: 128000 },
+        ];
+    const openaiPrimary = isOpenAICompat ? 'openai/kimi-k2-turbo-preview' : 'openai/gpt-5.2';
     config.models = config.models || {};
     config.models.providers = config.models.providers || {};
     config.models.providers.openai = {
         baseUrl: baseUrl,
-        api: 'openai-responses',
-        models: [
-            { id: 'gpt-5.2', name: 'GPT-5.2', contextWindow: 200000 },
-            { id: 'gpt-5', name: 'GPT-5', contextWindow: 200000 },
-            { id: 'gpt-4.5-preview', name: 'GPT-4.5 Preview', contextWindow: 128000 },
-        ]
+        api: openaiApi,
+        models: openaiModels
     };
-    // Add models to the allowlist so they appear in /models
     config.agents.defaults.models = config.agents.defaults.models || {};
-    config.agents.defaults.models['openai/gpt-5.2'] = { alias: 'GPT-5.2' };
-    config.agents.defaults.models['openai/gpt-5'] = { alias: 'GPT-5' };
-    config.agents.defaults.models['openai/gpt-4.5-preview'] = { alias: 'GPT-4.5' };
-    config.agents.defaults.model.primary = 'openai/gpt-5.2';
+    openaiModels.forEach((model) => {
+        config.agents.defaults.models[`openai/${model.id}`] = { alias: model.name };
+    });
+    config.agents.defaults.model.primary = openaiPrimary;
 } else if (baseUrl) {
     console.log('Configuring Anthropic provider with base URL:', baseUrl);
     config.models = config.models || {};

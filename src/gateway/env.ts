@@ -38,6 +38,8 @@ export function buildEnvVars(env: MoltbotEnv): Record<string, string> {
     } else {
       envVars.ANTHROPIC_BASE_URL = env.AI_GATEWAY_BASE_URL;
     }
+  } else if (env.OPENAI_BASE_URL) {
+    envVars.OPENAI_BASE_URL = env.OPENAI_BASE_URL;
   } else if (env.ANTHROPIC_BASE_URL) {
     envVars.ANTHROPIC_BASE_URL = env.ANTHROPIC_BASE_URL;
   }
